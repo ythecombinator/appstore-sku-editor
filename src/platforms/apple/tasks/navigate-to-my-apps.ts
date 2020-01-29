@@ -22,6 +22,7 @@ const navigateToMyApps = async (page: Page) => {
   });
 
   // Click on `My Apps`
+  await page.waitFor(5000);
   await page.evaluate(() => {
     const menuItems = Array.from(
       document.getElementsByClassName('main-nav-label')

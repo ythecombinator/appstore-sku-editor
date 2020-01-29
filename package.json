@@ -1,0 +1,47 @@
+{
+  "version": "0.1.0",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start": "node dist/index.js",
+    "watch": "tsdx watch --target node",
+    "build": "tsdx build --target node",
+    "test": "tsdx test",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build"
+  },
+  "peerDependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "name": "appstore-sku-editor",
+  "author": "Matheus Albuquerque",
+  "module": "dist/appstore-sku-editor.esm.js",
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/jest": "^24.9.0",
+    "@types/puppeteer": "^2.0.0",
+    "@types/request-promise-native": "^1.0.17",
+    "husky": "^4.0.10",
+    "tsdx": "^0.12.3",
+    "tslib": "^1.10.0",
+    "typescript": "^3.7.5"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "puppeteer": "^2.0.0",
+    "request-promise-native": "^1.0.8"
+  }
+}

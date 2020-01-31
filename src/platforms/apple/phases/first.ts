@@ -14,7 +14,9 @@ const firstPhase = async (page: Page, config: AppStoreConnectConfig) => {
   await navigateToMyApps(page);
   await navigateToIAPs(page, app.id);
   const items = await parseIAPs(page);
-  await fetchIAPdata(page, items[0]);
+  const data = await fetchIAPdata(page, items[0]);
+
+  console.log(data);
 };
 
 export { firstPhase };

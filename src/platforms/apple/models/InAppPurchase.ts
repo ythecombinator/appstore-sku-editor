@@ -26,9 +26,17 @@ interface MappedInAppPurchase {
   url: string;
 }
 
+interface RawInAppPurchasePricing {
+  regionDescriptor: string;
+  price: string;
+  priceAfterYear1: string;
+  priceAfterYear2: string;
+}
+
 export {
   InAppPurchaseStatus,
   InAppPurchaseType,
   RawInAppPurchase,
   MappedInAppPurchase,
+  RawInAppPurchasePricing,
 };

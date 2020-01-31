@@ -3,9 +3,25 @@ import { Page } from 'puppeteer';
 import {
   MappedInAppPurchase,
   RawInAppPurchasePricing,
+  MappedInAppPurchasePricing,
 } from '../models/InAppPurchase';
+import { formatRegion, formatCurrency, formatPrice } from '../util/string';
 
 // Helpers
+
+const mapInAppPurchasesData = (items: RawInAppPurchasePricing[]) => {
+  return items.map(item => ({
+    region: formatRegion(item.regionDescriptor),
+    currency: formatCurrency(item.regionDescriptor),
+    price: {
+      initial: formatPrice(item.price),
+      year1: formatPrice(item.priceAfterYear1),
+      year2: formatPrice(item.priceAfterYear2),
+    },
+  }));
+};
+
+// Handlers
 
 const handleNoPriceChanges = async (page: Page) => {
   // Click on `Current Price`
@@ -76,7 +92,9 @@ const handleNoPriceChanges = async (page: Page) => {
     return results;
   });
 
-  return data;
+  const formattedData = mapInAppPurchasesData(data);
+
+  return formattedData;
 };
 
 const handlePriceChanges = () => {};
@@ -107,7 +125,7 @@ const fetchIAPdata = async (page: Page, item: MappedInAppPurchase) => {
     return children.length > 2;
   });
 
-  let pricingTable = [] as RawInAppPurchasePricing[];
+  let pricingTable = [] as MappedInAppPurchasePricing[];
 
   if (hasPriceChanges) {
     handlePriceChanges();

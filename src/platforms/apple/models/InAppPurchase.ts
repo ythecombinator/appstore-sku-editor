@@ -33,10 +33,21 @@ interface RawInAppPurchasePricing {
   priceAfterYear2: string;
 }
 
+interface MappedInAppPurchasePricing {
+  region: string;
+  currency: string;
+  price: {
+    initial: number;
+    year1: number;
+    year2: number;
+  };
+}
+
 export {
   InAppPurchaseStatus,
   InAppPurchaseType,
   RawInAppPurchase,
   MappedInAppPurchase,
   RawInAppPurchasePricing,
+  MappedInAppPurchasePricing,
 };

@@ -7,7 +7,7 @@ import { navigateToIAPs } from '../tasks/navigate-to-iap';
 import { parseIAPs } from '../tasks/parse-iap';
 import { fetchIAPdata } from '../tasks/fetch-iap-data';
 
-const firstPhase = async (page: Page, config: AppStoreConnectConfig) => {
+const fetchData = async (page: Page, config: AppStoreConnectConfig) => {
   const { app, credentials } = config;
 
   await login(page, credentials);
@@ -19,4 +19,4 @@ const firstPhase = async (page: Page, config: AppStoreConnectConfig) => {
   console.log(data);
 };
 
-export { firstPhase };
+export { fetchData };

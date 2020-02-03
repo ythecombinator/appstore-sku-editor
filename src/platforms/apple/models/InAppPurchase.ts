@@ -36,11 +36,7 @@ interface RawInAppPurchasePricing {
 interface MappedInAppPurchasePricing {
   region: string;
   currency: string;
-  price: {
-    initial: number;
-    year1: number;
-    year2: number;
-  };
+  price: number;
 }
 
 export {

@@ -1,11 +1,7 @@
 import { Page } from 'puppeteer';
 
-import {
-  MappedInAppPurchase,
-  RawInAppPurchasePricing,
-  MappedInAppPurchasePricing,
-} from '../models/InAppPurchase';
-import { formatRegion, formatCurrency, formatPrice } from '../util/string';
+import { RawInAppPurchasePricing } from '../../models/InAppPurchase';
+import { formatCurrency, formatPrice, formatRegion } from '../../util/string';
 
 // Helpers
 
@@ -13,11 +9,7 @@ const mapInAppPurchasesData = (items: RawInAppPurchasePricing[]) => {
   return items.map(item => ({
     region: formatRegion(item.regionDescriptor),
     currency: formatCurrency(item.regionDescriptor),
-    price: {
-      initial: formatPrice(item.price),
-      year1: formatPrice(item.priceAfterYear1),
-      year2: formatPrice(item.priceAfterYear2),
-    },
+    price: formatPrice(item.price),
   }));
 };
 
@@ -97,43 +89,4 @@ const handleNoPriceChanges = async (page: Page) => {
   return formattedData;
 };
 
-const handlePriceChanges = () => {};
-
-// Task
-
-const fetchIAPdata = async (page: Page, item: MappedInAppPurchase) => {
-  // Navigate to item
-  await page.goto(item.url, { waitUntil: 'networkidle0' });
-
-  // Click on 'View all Subscription Pricing' button
-  await page.evaluate(() => {
-    const viewAllSubscriptionPricingButton = document.querySelector(
-      '[ng-click="viewSubPricingDetails()"]'
-    ) as HTMLElement;
-
-    viewAllSubscriptionPricingButton?.click();
-  });
-
-  // Switch handling based on whether there are price changes or not
-  const hasPriceChanges = await page.evaluate(() => {
-    const pricingTable = document.querySelector(
-      '[ng-show="showDateSchedule && futurePriceChangeCount !== tempPageContent.pricingDisplayArray.length"]'
-    ) as HTMLElement;
-
-    const { children } = pricingTable;
-
-    return children.length > 2;
-  });
-
-  let pricingTable = [] as MappedInAppPurchasePricing[];
-
-  if (hasPriceChanges) {
-    handlePriceChanges();
-  } else {
-    pricingTable = await handleNoPriceChanges(page);
-  }
-
-  return pricingTable;
-};
-
-export { fetchIAPdata };
+export { handleNoPriceChanges };

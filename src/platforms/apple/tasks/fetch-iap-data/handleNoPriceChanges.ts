@@ -1,17 +1,7 @@
 import { Page } from 'puppeteer';
 
 import { RawInAppPurchasePricing } from '../../models/InAppPurchase';
-import { formatCurrency, formatPrice, formatRegion } from '../../util/string';
-
-// Helpers
-
-const mapInAppPurchasesData = (items: RawInAppPurchasePricing[]) => {
-  return items.map(item => ({
-    region: formatRegion(item.regionDescriptor),
-    currency: formatCurrency(item.regionDescriptor),
-    price: formatPrice(item.price),
-  }));
-};
+import { mapInAppPurchaseData } from './helpers';
 
 // Handlers
 
@@ -84,7 +74,7 @@ const handleNoPriceChanges = async (page: Page) => {
     return results;
   });
 
-  const formattedData = mapInAppPurchasesData(data);
+  const formattedData = mapInAppPurchaseData(data);
 
   return formattedData;
 };

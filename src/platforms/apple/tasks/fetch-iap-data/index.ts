@@ -12,7 +12,7 @@ import { handlePriceChanges } from './handlePriceChanges';
 const fetchIAPdata = async (page: Page, _: MappedInAppPurchase) => {
   // Navigate to item
   await page.goto(
-    'https://appstoreconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app/709551897/addons/1101221073',
+    'https://appstoreconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app/709551897/addons/1147114543',
     { waitUntil: 'networkidle0' }
   );
 

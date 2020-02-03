@@ -1,11 +1,14 @@
+import dayjs, { Dayjs as Date } from 'dayjs';
 import { Page } from 'puppeteer';
 
 import {
-  RawInAppPurchasePricing,
   MappedInAppPurchasePricing,
+  RawInAppPurchasePricing,
 } from '../../models/InAppPurchase';
-import { formatCurrency, formatPrice, formatRegion } from '../../util/string';
-import dayjs, { Dayjs as Date } from 'dayjs';
+
+import { mapInAppPurchaseData } from './helpers';
+
+type MaybeDate = Date | null;
 
 interface PriceDateMapping {
   date: string;
@@ -13,28 +16,18 @@ interface PriceDateMapping {
 }
 
 interface MappedPriceDateMapping {
-  date: Date | null;
-  data: {
-    region: string;
-    currency: string;
-    price: number;
-  }[];
+  date: MaybeDate;
+  data: MappedInAppPurchasePricing[];
 }
 
 // Helpers
 
-const mapInAppPurchasesData = (items: RawInAppPurchasePricing[]) => {
-  return items.map(item => ({
-    region: formatRegion(item.regionDescriptor),
-    currency: formatCurrency(item.regionDescriptor),
-    price: formatPrice(item.price),
-  }));
-};
+const startingDateIdentifier = 'Starting Price';
 
-const mapInAppPurchases = (items: PriceDateMapping[]) => {
+const mapInAppPurchase = (items: PriceDateMapping[]) => {
   return items.map(item => ({
-    date: item.date === 'Starting Price' ? null : dayjs(item.date),
-    data: mapInAppPurchasesData(item.data),
+    date: item.date === startingDateIdentifier ? null : dayjs(item.date),
+    data: mapInAppPurchaseData(item.data),
   }));
 };
 
@@ -42,47 +35,55 @@ const findOccurences = (
   items: MappedPriceDateMapping[],
   searchTerm: string
 ) => {
-  let occurences = [] as (Date | null)[];
+  let occurences = [] as MaybeDate[];
 
   items.forEach(item => {
-    const occur = item.data.find(i => i.region === searchTerm);
+    const hasOccurrence = item.data.find(i => i.region === searchTerm);
 
-    if (occur) {
+    if (hasOccurrence) {
       occurences.push(item.date);
     }
   });
 
-  const comparable = occurences.filter(date => date !== null);
-  const newer = comparable.length > 0;
+  const comparableOccurences = occurences.filter(date => date !== null);
 
-  const last = newer
-    ? comparable.reduce((a, b) => {
+  const hasNewerOccurence = comparableOccurences.length > 0;
+  const lastOccurence = hasNewerOccurence
+    ? comparableOccurences.reduce((a, b) => {
         return (a as Date).isAfter(b as Date) ? a : b;
       })
     : null;
 
   return {
-    newer,
-    last,
+    hasNewerOccurence,
+    lastOccurence,
   };
 };
 
-const orderInAppPurchases = (pricingTable: MappedPriceDateMapping[]) => {
-  const original = pricingTable.find(item => item.date === null)?.data;
+const sortInAppPurchases = (pricingTable: MappedPriceDateMapping[]) => {
+  const initialData = pricingTable.find(item => item.date === null)?.data;
 
-  const mapped = original?.map(item => {
-    const { newer, last } = findOccurences(pricingTable, item.region);
+  const mappedData = initialData?.map(item => {
+    const { hasNewerOccurence, lastOccurence } = findOccurences(
+      pricingTable,
+      item.region
+    );
 
-    if (newer) {
-      const where = pricingTable.find(item => item.date!.isSame(last!))?.data;
-      const newItem = where?.find(i => i.region === item.region);
+    if (hasNewerOccurence) {
+      const lastPricingOccurence = pricingTable.find(item =>
+        item.date!.isSame(lastOccurence!)
+      )?.data;
+
+      const newItem = lastPricingOccurence?.find(
+        i => i.region === item.region
+      )!;
       return newItem;
     } else {
       return item;
     }
   });
 
-  return mapped;
+  return mappedData;
 };
 
 // Handlers
@@ -151,8 +152,8 @@ const handlePriceChanges = async (page: Page) => {
     return data;
   });
 
-  const mappedInAppPurchases = mapInAppPurchases(data);
-  const orderedInAppPurchases = orderInAppPurchases(
+  const mappedInAppPurchases = mapInAppPurchase(data);
+  const orderedInAppPurchases = sortInAppPurchases(
     mappedInAppPurchases
   ) as MappedInAppPurchasePricing[];
 

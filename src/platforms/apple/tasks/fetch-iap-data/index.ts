@@ -9,12 +9,9 @@ import { handlePriceChanges } from './handlePriceChanges';
 
 // Task
 
-const fetchIAPdata = async (page: Page, _: MappedInAppPurchase) => {
+const fetchIAPdata = async (page: Page, item: MappedInAppPurchase) => {
   // Navigate to item
-  await page.goto(
-    'https://appstoreconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app/709551897/addons/1147114543',
-    { waitUntil: 'networkidle0' }
-  );
+  await page.goto(item.url, { waitUntil: 'networkidle0' });
 
   // Click on 'View all Subscription Pricing' button
   await page.evaluate(() => {

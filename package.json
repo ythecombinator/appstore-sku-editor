@@ -32,6 +32,7 @@
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
     "@types/jest": "^24.9.0",
+    "@types/pretty-hrtime": "^1.0.0",
     "@types/puppeteer": "^2.0.0",
     "@types/request-promise-native": "^1.0.17",
     "husky": "^4.0.10",
@@ -40,7 +41,10 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
+    "chalk": "^3.0.0",
+    "dayjs": "^1.8.19",
     "dotenv": "^8.2.0",
+    "pretty-hrtime": "^1.0.3",
     "puppeteer": "^2.0.0",
     "request-promise-native": "^1.0.8"
   }

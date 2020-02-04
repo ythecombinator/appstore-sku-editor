@@ -8,6 +8,7 @@ const main = async () => {
   });
 
   const page = await browser.newPage();
+  await page.setDefaultTimeout(180000);
 
   try {
     await appStoreConnectRoutine(page);

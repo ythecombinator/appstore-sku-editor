@@ -1,15 +1,14 @@
 import { Page } from 'puppeteer';
 
-import { AppStoreConnectConfig } from '../models/AppStoreConnectConfig';
-import { login } from '../tasks/login';
-import { navigateToMyApps } from '../tasks/navigate-to-my-apps';
-import { navigateToIAPs } from '../tasks/navigate-to-iap';
-import { parseIAPs } from '../tasks/parse-iap';
-import { fetchIAPdata } from '../tasks/fetch-iap-data';
-import { MappedInAppPurchasePricing } from '../models/InAppPurchase';
-
-import { logger } from '../../../util/terminal';
 import { meter } from '../../../util/performance';
+import { logger } from '../../../util/terminal';
+import { AppStoreConnectConfig } from '../models/AppStoreConnectConfig';
+import { InAppPurchase } from '../models/InAppPurchase';
+import { fetchIAPdata } from '../tasks/fetch-iap-data';
+import { login } from '../tasks/login';
+import { navigateToIAPs } from '../tasks/navigate-to-iap';
+import { navigateToMyApps } from '../tasks/navigate-to-my-apps';
+import { parseIAPs } from '../tasks/parse-iap';
 
 const fetchData = async (page: Page, config: AppStoreConnectConfig) => {
   const { app, credentials } = config;
@@ -37,7 +36,7 @@ const fetchData = async (page: Page, config: AppStoreConnectConfig) => {
   logger.finish('Parsing IAPs list');
 
   // Iterating results
-  const results = [] as MappedInAppPurchasePricing[][];
+  const results = [] as InAppPurchase[];
 
   for (const item of items) {
     logger.init(`Fetching item: ${item.name}`);

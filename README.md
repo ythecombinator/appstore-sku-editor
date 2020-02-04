@@ -1,5 +1,7 @@
 # App Store SKU Editor
 
+![logo](logo.png)
+
 ## Usage
 
 ### Setting local environment

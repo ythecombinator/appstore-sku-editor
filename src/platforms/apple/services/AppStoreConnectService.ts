@@ -1,7 +1,7 @@
 import request from 'request-promise-native';
 
 import { parse } from '../../../util/cookies';
-import { prompt } from '../../../util/prompt';
+import { prompt } from '../../../util/terminal';
 import { config } from '../config';
 import { AppStoreConnectCookies } from '../models/AppStoreConnectCookies';
 

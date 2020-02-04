@@ -1,6 +1,7 @@
 import puppeteer from 'puppeteer';
 
 import { appStoreConnectRoutine } from './platforms/apple';
+import { logger } from './util/terminal';
 
 const main = async () => {
   const browser = await puppeteer.launch({
@@ -13,7 +14,7 @@ const main = async () => {
   try {
     await appStoreConnectRoutine(page);
   } catch (err) {
-    console.error(err);
+    logger.error(err);
   }
 };
 

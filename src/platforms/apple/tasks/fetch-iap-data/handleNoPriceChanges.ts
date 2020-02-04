@@ -1,11 +1,14 @@
 import { Page } from 'puppeteer';
 
-import { RawInAppPurchasePricing } from '../../models/InAppPurchase';
+import {
+  RawInAppPurchasePricing,
+  MappedInAppPurchase,
+} from '../../models/InAppPurchase';
 import { mapInAppPurchaseData } from './helpers';
 
 // Handlers
 
-const handleNoPriceChanges = async (page: Page) => {
+const handleNoPriceChanges = async (page: Page, item: MappedInAppPurchase) => {
   // Click on `Current Price`
   await page.evaluate(() => {
     const currentPriceButton = Array.from(
@@ -76,7 +79,13 @@ const handleNoPriceChanges = async (page: Page) => {
 
   const formattedData = mapInAppPurchaseData(data);
 
-  return formattedData;
+  const result = {
+    name: item.name,
+    id: item.id,
+    data: formattedData,
+  };
+
+  return result;
 };
 
 export { handleNoPriceChanges };

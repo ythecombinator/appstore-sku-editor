@@ -39,6 +39,10 @@ interface MappedInAppPurchasePricing {
   price: number;
 }
 
+interface InAppPurchase extends Pick<MappedInAppPurchase, 'name' | 'id'> {
+  data: MappedInAppPurchasePricing[];
+}
+
 export {
   InAppPurchaseStatus,
   InAppPurchaseType,
@@ -46,4 +50,5 @@ export {
   MappedInAppPurchase,
   RawInAppPurchasePricing,
   MappedInAppPurchasePricing,
+  InAppPurchase,
 };

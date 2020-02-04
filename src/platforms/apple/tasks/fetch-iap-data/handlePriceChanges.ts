@@ -4,6 +4,7 @@ import { Page } from 'puppeteer';
 import {
   MappedInAppPurchasePricing,
   RawInAppPurchasePricing,
+  MappedInAppPurchase,
 } from '../../models/InAppPurchase';
 
 import { mapInAppPurchaseData } from './helpers';
@@ -88,7 +89,7 @@ const sortInAppPurchases = (pricingTable: MappedPriceDateMapping[]) => {
 
 // Handlers
 
-const handlePriceChanges = async (page: Page) => {
+const handlePriceChanges = async (page: Page, item: MappedInAppPurchase) => {
   // Find the table element
   const data = await page.evaluate(() => {
     const pricingTable = document.querySelectorAll(
@@ -157,7 +158,13 @@ const handlePriceChanges = async (page: Page) => {
     mappedInAppPurchases
   ) as MappedInAppPurchasePricing[];
 
-  return orderedInAppPurchases;
+  const result = {
+    name: item.name,
+    id: item.id,
+    data: orderedInAppPurchases,
+  };
+
+  return result;
 };
 
 export { handlePriceChanges };

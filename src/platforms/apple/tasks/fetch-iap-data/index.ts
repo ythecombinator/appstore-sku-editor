@@ -1,9 +1,6 @@
 import { Page } from 'puppeteer';
 
-import {
-  MappedInAppPurchase,
-  MappedInAppPurchasePricing,
-} from '../../models/InAppPurchase';
+import { MappedInAppPurchase, InAppPurchase } from '../../models/InAppPurchase';
 import { handleNoPriceChanges } from './handleNoPriceChanges';
 import { handlePriceChanges } from './handlePriceChanges';
 
@@ -33,12 +30,12 @@ const fetchIAPdata = async (page: Page, item: MappedInAppPurchase) => {
     return children.length > 2;
   });
 
-  let pricingTable = [] as MappedInAppPurchasePricing[];
+  let pricingTable = {} as InAppPurchase;
 
   if (hasPriceChanges) {
-    pricingTable = await handlePriceChanges(page);
+    pricingTable = await handlePriceChanges(page, item);
   } else {
-    pricingTable = await handleNoPriceChanges(page);
+    pricingTable = await handleNoPriceChanges(page, item);
   }
 
   return pricingTable;

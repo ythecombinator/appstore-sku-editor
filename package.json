@@ -30,6 +30,7 @@
   "author": "Matheus Albuquerque",
   "module": "dist/appstore-sku-editor.esm.js",
   "devDependencies": {
+    "@types/dinero.js": "^1.6.2",
     "@types/dotenv": "^8.2.0",
     "@types/jest": "^24.9.0",
     "@types/pretty-hrtime": "^1.0.0",
@@ -43,7 +44,9 @@
   "dependencies": {
     "chalk": "^3.0.0",
     "dayjs": "^1.8.19",
+    "dinero.js": "^1.6.0",
     "dotenv": "^8.2.0",
+    "google-spreadsheet": "^3.0.2",
     "pretty-hrtime": "^1.0.3",
     "puppeteer": "^2.0.0",
     "request-promise-native": "^1.0.8"

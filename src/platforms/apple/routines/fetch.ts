@@ -9,6 +9,7 @@ import { login } from '../tasks/login';
 import { navigateToIAPs } from '../tasks/navigate-to-iap';
 import { navigateToMyApps } from '../tasks/navigate-to-my-apps';
 import { parseIAPs } from '../tasks/parse-iap';
+import { pushToGoogleSheets } from '../tasks/push-to-google-sheets';
 
 const fetchData = async (page: Page, config: AppStoreConnectConfig) => {
   const { app, credentials } = config;
@@ -44,6 +45,11 @@ const fetchData = async (page: Page, config: AppStoreConnectConfig) => {
     results.push(result);
     logger.finish(`Fetching item: ${item.name}`);
   }
+
+  // Pushing to Google Sheets
+  logger.init('Pushing to Google Sheets');
+  await pushToGoogleSheets(results);
+  logger.finish('Pushing to Google Sheets');
 
   const { time } = meter.stop();
   logger.info(`Fetched ${results.length} items in ${time}s. 🤓`);

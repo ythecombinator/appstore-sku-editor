@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer';
+import { exit } from 'process';
 
 import { appStoreConnectRoutine } from './platforms/apple';
 import { logger } from './util/terminal';
@@ -16,8 +17,10 @@ const main = async () => {
 
   try {
     await appStoreConnectRoutine(page);
+    exit();
   } catch (err) {
     logger.error(err);
+    exit(err.code);
   }
 };
 

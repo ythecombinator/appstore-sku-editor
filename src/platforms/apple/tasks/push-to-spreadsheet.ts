@@ -6,17 +6,17 @@ import credentials from '../../../../credentials.json';
 
 const { id } = config.variables.googleSheets;
 
-const pushToGoogleSheets = async (data: InAppPurchase, index: number) => {
+const pushToSpreadsheet = async (data: InAppPurchase) => {
+  // Get service instance
   const googleSheetsService = await GoogleSheetsService.getInstance({
     id,
     credentials,
   });
 
-  await googleSheetsService.deleteWorksheet(index);
+  // Create new Worksheet
   const newWorksheet = await googleSheetsService.createWorksheet(data);
-
   await GoogleSheetsService.formatWorksheet(newWorksheet);
   await GoogleSheetsService.appendToWorksheet(newWorksheet, data);
 };
 
-export { pushToGoogleSheets };
+export { pushToSpreadsheet };

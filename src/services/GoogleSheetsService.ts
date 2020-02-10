@@ -10,7 +10,22 @@ import {
 } from '../platforms/apple/models/InAppPurchase';
 import { GoogleSheetsServiceCredentials } from '../models/GoogleSheetsServiceCredentials';
 
+// Types
+
+interface Options {
+  id: string;
+  credentials: GoogleSheetsServiceCredentials;
+}
+
+// Constants
+
 const defaultHeaders = ['Region', 'Currency', 'Price'];
+const requiredWorksheetName = '_ignore_';
+const googleApiTimeout = 100000;
+// Ideally, this would be 99 (100-1), but going for half the regions (156/2) is safer
+const googleApiThreshold = 78;
+
+// Helpers
 
 const addRow = async (worksheet: any, items: MappedInAppPurchasePricing[]) => {
   for (const item of items) {
@@ -23,10 +38,7 @@ const addRow = async (worksheet: any, items: MappedInAppPurchasePricing[]) => {
   }
 };
 
-interface Options {
-  id: string;
-  credentials: GoogleSheetsServiceCredentials;
-}
+// Module
 
 class GoogleSheetsService {
   private static instance: GoogleSheetsService;
@@ -54,6 +66,27 @@ class GoogleSheetsService {
     await this.googleSpreadsheet.loadInfo();
   };
 
+  // Spreadsheets • Instance properties
+
+  cleanupSpreadsheet = async () => {
+    // Items
+    const sheets = await this.googleSpreadsheet.sheetsById;
+    const ids = Object.keys(this.googleSpreadsheet._rawSheets).map(id =>
+      Number(id)
+    );
+
+    // Excluding required Worksheet
+    const sheetsToBeDeleted = ids
+      .map(id => sheets[id])
+      .filter(item => item._rawProperties.title !== requiredWorksheetName);
+
+    // Deleting
+    for (const item of sheetsToBeDeleted) {
+      await this.deleteWorksheet(item);
+      await timeout(googleApiTimeout);
+    }
+  };
+
   // Worksheets • Instance properties
 
   createWorksheet = async (item: InAppPurchase) => {
@@ -65,17 +98,9 @@ class GoogleSheetsService {
     return worksheet;
   };
 
-  deleteWorksheet = async (index: number) => {
-    console.log('index', index);
-    const sheets = await this.googleSpreadsheet.sheetsByIndex;
-    const toBeDeleted = sheets[index];
-    console.log(toBeDeleted._rawProperties.title);
-    if (toBeDeleted) {
-      console.log('chegou');
-      await toBeDeleted.delete();
-      await this.googleSpreadsheet.loadInfo();
-      console.log('deletou');
-    }
+  deleteWorksheet = async (worksheet: any) => {
+    await worksheet.delete();
+    await this.googleSpreadsheet.loadInfo();
   };
 
   // Worksheets • Class properties
@@ -95,11 +120,11 @@ class GoogleSheetsService {
   };
 
   static appendToWorksheet = async (worksheet: any, item: InAppPurchase) => {
-    const newData = chunk(item.data, 99);
+    const newData = chunk(item.data, googleApiThreshold);
 
     for (const chunk of newData) {
       await addRow(worksheet, chunk);
-      await timeout(100000);
+      await timeout(googleApiTimeout);
     }
   };
 }

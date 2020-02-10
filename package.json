@@ -47,6 +47,7 @@
     "dinero.js": "^1.6.0",
     "dotenv": "^8.2.0",
     "google-spreadsheet": "^3.0.2",
+    "meow": "^6.0.0",
     "pretty-hrtime": "^1.0.3",
     "puppeteer": "^2.0.0",
     "request-promise-native": "^1.0.8"

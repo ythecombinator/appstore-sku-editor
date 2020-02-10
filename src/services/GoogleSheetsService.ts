@@ -2,11 +2,26 @@ import { GoogleSpreadsheet } from 'google-spreadsheet';
 
 import { priceToString } from '../util/currency';
 import { timeout } from '../util/function';
+import { chunk } from '../util/array';
 
-import { InAppPurchase } from '../platforms/apple/models/InAppPurchase';
+import {
+  InAppPurchase,
+  MappedInAppPurchasePricing,
+} from '../platforms/apple/models/InAppPurchase';
 import { GoogleSheetsServiceCredentials } from '../models/GoogleSheetsServiceCredentials';
 
 const defaultHeaders = ['Region', 'Currency', 'Price'];
+
+const addRow = async (worksheet: any, items: MappedInAppPurchasePricing[]) => {
+  for (const item of items) {
+    const { region, currency, price } = item;
+    await worksheet.addRow({
+      Region: region,
+      Currency: currency,
+      Price: priceToString(price),
+    });
+  }
+};
 
 interface Options {
   id: string;
@@ -39,7 +54,7 @@ class GoogleSheetsService {
     await this.googleSpreadsheet.loadInfo();
   };
 
-  // Worksheets
+  // Worksheets • Instance properties
 
   createWorksheet = async (item: InAppPurchase) => {
     const worksheet = await this.googleSpreadsheet.addSheet({
@@ -51,13 +66,19 @@ class GoogleSheetsService {
   };
 
   deleteWorksheet = async (index: number) => {
+    console.log('index', index);
     const sheets = await this.googleSpreadsheet.sheetsByIndex;
     const toBeDeleted = sheets[index];
+    console.log(toBeDeleted._rawProperties.title);
     if (toBeDeleted) {
-      toBeDeleted.delete();
+      console.log('chegou');
+      await toBeDeleted.delete();
       await this.googleSpreadsheet.loadInfo();
+      console.log('deletou');
     }
   };
+
+  // Worksheets • Class properties
 
   static formatWorksheet = async (worksheet: any) => {
     await worksheet.loadCells('A1:C1');
@@ -73,15 +94,12 @@ class GoogleSheetsService {
     await worksheet.saveUpdatedCells();
   };
 
-  static appendToWorksheet = async (worksheet: any, iap: InAppPurchase) => {
-    for (const item of iap.data) {
-      await timeout(5000);
-      const { region, currency, price } = item;
-      await worksheet.addRow({
-        Region: region,
-        Currency: currency,
-        Price: priceToString(price),
-      });
+  static appendToWorksheet = async (worksheet: any, item: InAppPurchase) => {
+    const newData = chunk(item.data, 99);
+
+    for (const chunk of newData) {
+      await addRow(worksheet, chunk);
+      await timeout(100000);
     }
   };
 }

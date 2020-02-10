@@ -38,18 +38,23 @@ const fetchData = async (page: Page, config: AppStoreConnectConfig) => {
 
   // Iterating results
   const results = [] as InAppPurchase[];
+  let index = 1;
 
   for (const item of items) {
+    // Fetching item
     logger.init(`Fetching item: ${item.name}`);
     const result = await fetchIAPdata(page, item);
     results.push(result);
     logger.finish(`Fetching item: ${item.name}`);
-  }
 
-  // Pushing to Google Sheets
-  logger.init('Pushing to Google Sheets');
-  await pushToGoogleSheets(results);
-  logger.finish('Pushing to Google Sheets');
+    // Pushing to Google Sheets
+    logger.init(`Pushing to Google Sheets: ${item.name}`);
+    await pushToGoogleSheets(result, index);
+    logger.finish(`Pushing item to Google Sheets: ${item.name}`);
+
+    // Increasing the counter
+    index++;
+  }
 
   const { time } = meter.stop();
   logger.info(`Fetched ${results.length} items in ${time}s. 🤓`);

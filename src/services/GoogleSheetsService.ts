@@ -20,6 +20,7 @@ interface Options {
 // Constants
 
 const defaultHeaders = ['Region', 'Currency', 'Price'];
+const defaultCells = 'A1:C1';
 const requiredWorksheetName = '_ignore_';
 const googleApiTimeout = 100000;
 // Ideally, this would be 99 (100-1), but going for half the regions (156/2) is safer
@@ -83,8 +84,9 @@ class GoogleSheetsService {
     // Deleting
     for (const item of sheetsToBeDeleted) {
       await this.deleteWorksheet(item);
-      await timeout(googleApiTimeout);
     }
+
+    await timeout(googleApiTimeout);
   };
 
   // Worksheets • Instance properties
@@ -106,7 +108,7 @@ class GoogleSheetsService {
   // Worksheets • Class properties
 
   static formatWorksheet = async (worksheet: any) => {
-    await worksheet.loadCells('A1:C1');
+    await worksheet.loadCells(defaultCells);
 
     const regionCell = worksheet.getCell(0, 0);
     const currencyCell = worksheet.getCell(0, 1);

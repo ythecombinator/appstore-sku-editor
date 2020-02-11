@@ -1,15 +1,11 @@
 import puppeteer from 'puppeteer';
-import cliUtils from 'meow';
 import { exit } from 'process';
 
 import { appStoreConnectRoutine } from './platforms/apple';
-import { logger } from './util/terminal';
+import { logger, cli } from './util/terminal';
+import { Flags, Routine, Platform } from './models/CLI';
+
 import { config } from './config';
-
-// Types
-type Flags = typeof cli['flags'];
-
-type Routine = 'fetch' | 'push';
 
 // Helpers
 const { constants } = config;
@@ -17,6 +13,7 @@ const { constants } = config;
 // Main
 const main = async (flags: Flags) => {
   const routine = flags.routine as Routine;
+  const platform = flags.platform as Platform;
 
   const browser = await puppeteer.launch({
     headless: false,
@@ -26,13 +23,13 @@ const main = async (flags: Flags) => {
   await page.setDefaultTimeout(constants.defaultTimeout);
 
   try {
-    switch (routine) {
-      case 'fetch': {
-        await appStoreConnectRoutine(page);
+    switch (platform) {
+      case Platform.ios: {
+        await appStoreConnectRoutine(page, routine);
         break;
       }
-      case 'push': {
-        console.log('push');
+      case Platform.android: {
+        logger.info("'Android' is not available");
         break;
       }
     }
@@ -42,26 +39,5 @@ const main = async (flags: Flags) => {
     exit(err.code);
   }
 };
-
-const cli = cliUtils(
-  `
-	Usage
-	  $ appstore-sku-editor
-
-	Options
-	  --routine, -r  Specify wether to 'fetch' or 'push' data
-
-	Examples
-	  $ appstore-sku-editor --routine fetch
-`,
-  {
-    flags: {
-      routine: {
-        type: 'string',
-        alias: 'r',
-      },
-    },
-  }
-);
 
 main(cli.flags);

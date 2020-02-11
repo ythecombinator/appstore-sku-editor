@@ -1,7 +1,8 @@
 import readline from 'readline';
 import { green, cyan, blue, red } from 'chalk';
+import cliUtils from 'meow';
 
-const { log } = console;
+// CLI
 
 const prompt = (message: string) => {
   const promptInterface = readline.createInterface({
@@ -16,7 +17,35 @@ const prompt = (message: string) => {
   });
 };
 
+const cli = cliUtils(
+  `
+	Usage
+	  $ yarn start
+
+	Options
+    --platform, -p  Specify wether to connect to App Store ('ios') or Play Store ('android')
+    --routine, -r   Specify wether to 'fetch' or 'push' data
+
+	Examples
+	  $ yarn start --platform ios --routine fetch
+`,
+  {
+    flags: {
+      routine: {
+        type: 'string',
+        alias: 'r',
+      },
+      platform: {
+        type: 'string',
+        alias: 'p',
+      },
+    },
+  }
+);
+
 // Logger
+
+const { log } = console;
 
 const init = (message: string) => {
   log('\n');
@@ -47,4 +76,4 @@ const logger = {
   error,
 };
 
-export { prompt, logger };
+export { prompt, cli, logger };

@@ -9,6 +9,7 @@ import {
   MappedInAppPurchasePricing,
 } from '../platforms/apple/models/InAppPurchase';
 import { GoogleSheetsServiceCredentials } from '../models/GoogleSheetsServiceCredentials';
+import { GoogleSheetsServiceInAppPurchase } from '../models/GoogleSheetsServiceInAppPurchase';
 
 // Types
 
@@ -68,6 +69,35 @@ class GoogleSheetsService {
   };
 
   // Spreadsheets • Instance properties
+  readSpreadsheet = async () => {
+    const results = [] as GoogleSheetsServiceInAppPurchase[];
+
+    // Items
+    const sheetsMapping = await this.googleSpreadsheet.sheetsById;
+    const ids = Object.keys(this.googleSpreadsheet._rawSheets).map(id =>
+      Number(id)
+    );
+
+    // Mapping data
+    const sheets = ids
+      .map(id => sheetsMapping[id])
+      .filter(item => item._rawProperties.title !== requiredWorksheetName);
+
+    // Pushing
+    for (const sheet of sheets) {
+      const { title } = sheet;
+      const rows = await sheet.getRows();
+
+      const item: GoogleSheetsServiceInAppPurchase = {
+        id: title,
+        data: rows.map((row: any) => row._rawData),
+      };
+
+      results.push(item);
+    }
+
+    return results;
+  };
 
   cleanupSpreadsheet = async () => {
     // Items

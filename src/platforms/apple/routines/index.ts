@@ -1,1 +1,2 @@
-export { fetchData as fetchAppStoreData } from './fetch';
+export { fetchData } from './fetch';
+export { pushData } from './push';

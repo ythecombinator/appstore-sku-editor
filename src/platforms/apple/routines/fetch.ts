@@ -1,16 +1,14 @@
-// @ts-nocheck
 import { Page } from 'puppeteer';
 
 import { meter } from '../../../util/performance';
 import { logger } from '../../../util/terminal';
 import { AppStoreConnectConfig } from '../models/AppStoreConnectConfig';
-import { InAppPurchase } from '../models/InAppPurchase';
+import { cleanupSpreadsheet } from '../tasks/cleanup-spreadsheet';
 import { fetchIAPdata } from '../tasks/fetch-iap-data';
 import { login } from '../tasks/login';
 import { navigateToIAPs } from '../tasks/navigate-to-iap';
 import { navigateToMyApps } from '../tasks/navigate-to-my-apps';
 import { parseIAPs } from '../tasks/parse-iap';
-import { cleanupSpreadsheet } from '../tasks/cleanup-spreadsheet';
 import { pushToSpreadsheet } from '../tasks/push-to-spreadsheet';
 
 const fetchData = async (page: Page, config: AppStoreConnectConfig) => {

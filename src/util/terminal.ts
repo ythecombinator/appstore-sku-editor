@@ -8,6 +8,7 @@ const prompt = (message: string) => {
   const promptInterface = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
+    terminal: false,
   });
 
   return new Promise(resolve => {

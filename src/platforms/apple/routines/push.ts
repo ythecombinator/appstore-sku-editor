@@ -17,7 +17,6 @@ const pushData = async (page: Page, config: AppStoreConnectConfig) => {
 
   // Getting data
   const data = await fetchFromSpreadsheet();
-  console.log(data[0]);
 
   // Signing In
   logger.init('Signing in');

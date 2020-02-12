@@ -13,8 +13,8 @@ const createInAppPurchase = async (
 ) => {
   // Ask for data
 
-  const referenceName = 'referenceName22';
-  const productId = 'productId22';
+  const referenceName = 'referenceName25';
+  const productId = 'productId25';
 
   // const referenceName = await prompt('Enter the Reference Name: ');
   // const productId = await prompt('Enter the Product ID: ');
@@ -102,6 +102,7 @@ const createInAppPurchase = async (
   )?.price;
 
   // Get the available values
+
   await page.waitFor(10000);
   const rawOptions = await page.evaluate(() => {
     const selects = Array.from(
@@ -120,6 +121,8 @@ const createInAppPurchase = async (
     return mappedOptions as AppStoreConnectPricingOption[];
   });
 
+  // Finding the desired price in USD
+
   const options = mapPricingOptions(rawOptions);
 
   const optionValues = options.map(option => option.value);
@@ -128,7 +131,40 @@ const createInAppPurchase = async (
 
   const optionToBeChecked = options.find(option => option.value === closest);
 
-  console.log(optionToBeChecked);
+  // Select the USD pricing
+
+  await page.evaluate((optionToBeChecked: AppStoreConnectPricingOption) => {
+    const selects = Array.from(
+      document.querySelectorAll(
+        'select[ng-options="price as price.display for price in data.basePriceList"]'
+      )
+    );
+    const select = selects.find(
+      item => item.children.length > 100
+    ) as HTMLSelectElement;
+
+    console.log(select, optionToBeChecked);
+
+    select.value = optionToBeChecked.key;
+  }, optionToBeChecked);
+
+  // Click 'Next'
+
+  await page.evaluate(() => {
+    const paragraphs = Array.from(document.body.querySelectorAll('p'));
+    const description = paragraphs.find(
+      item =>
+        item.innerText ===
+        "Choose a price, and we'll automatically calculate the prices for all 155 countries or regions based on the most recent foreign exchange rates. You can edit prices for individual countries or regions in the next step."
+    );
+    const nextButtonContainer =
+      description.parentElement.parentElement.parentElement.parentElement
+        .parentElement;
+    const nextButton = nextButtonContainer.querySelector(
+      'button[ng-click="onNext()"]'
+    );
+    nextButton.click();
+  });
 };
 
 export { createInAppPurchase };

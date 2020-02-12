@@ -1,8 +1,11 @@
 // @ts-nocheck
 import { Page } from 'puppeteer';
 
+import { findClosest } from '../../../util/array';
+
 import { GoogleSheetsInAppPurchase } from '../models/InAppPurchase';
 import { AppStoreConnectPricingOption } from '../models/AppStoreConnectPricingOption';
+import { mapPricingOptions } from '../util/array';
 
 const createInAppPurchase = async (
   page: Page,
@@ -10,8 +13,8 @@ const createInAppPurchase = async (
 ) => {
   // Ask for data
 
-  const referenceName = 'referenceName19';
-  const productId = 'productId19';
+  const referenceName = 'referenceName22';
+  const productId = 'productId22';
 
   // const referenceName = await prompt('Enter the Reference Name: ');
   // const productId = await prompt('Enter the Product ID: ');
@@ -100,7 +103,7 @@ const createInAppPurchase = async (
 
   // Get the available values
   await page.waitFor(10000);
-  const options = await page.evaluate(() => {
+  const rawOptions = await page.evaluate(() => {
     const selects = Array.from(
       document.querySelectorAll(
         'select[ng-options="price as price.display for price in data.basePriceList"]'
@@ -117,7 +120,15 @@ const createInAppPurchase = async (
     return mappedOptions as AppStoreConnectPricingOption[];
   });
 
-  console.log(options);
+  const options = mapPricingOptions(rawOptions);
+
+  const optionValues = options.map(option => option.value);
+
+  const closest = findClosest(optionValues, usdPrice);
+
+  const optionToBeChecked = options.find(option => option.value === closest);
+
+  console.log(optionToBeChecked);
 };
 
 export { createInAppPurchase };

@@ -1,13 +1,17 @@
 // @ts-nocheck
 import { Page } from 'puppeteer';
-import { timeout } from 'util/function';
-import { prompt } from '../../../util/terminal';
 
-const createInAppPurchase = async (page: Page) => {
+import { GoogleSheetsInAppPurchase } from '../models/InAppPurchase';
+import { AppStoreConnectPricingOption } from '../models/AppStoreConnectPricingOption';
+
+const createInAppPurchase = async (
+  page: Page,
+  baseInAppPurchase: GoogleSheetsInAppPurchase
+) => {
   // Ask for data
 
-  const referenceName = 'referenceName13';
-  const productId = 'productId13';
+  const referenceName = 'referenceName19';
+  const productId = 'productId19';
 
   // const referenceName = await prompt('Enter the Reference Name: ');
   // const productId = await prompt('Enter the Product ID: ');
@@ -86,6 +90,34 @@ const createInAppPurchase = async (page: Page) => {
     ) as HTMLElement;
     createButton?.click();
   });
+
+  // Get the default value
+
+  const usdRegion = 'United States ';
+  const usdPrice = baseInAppPurchase.data.find(
+    item => item.region === usdRegion
+  )?.price;
+
+  // Get the available values
+  await page.waitFor(10000);
+  const options = await page.evaluate(() => {
+    const selects = Array.from(
+      document.querySelectorAll(
+        'select[ng-options="price as price.display for price in data.basePriceList"]'
+      )
+    );
+    const select = selects.find(item => item.children.length > 100);
+
+    const rawOptions = Array.from(select.children) as HTMLOptionElement[];
+    const mappedOptions = rawOptions.map(option => ({
+      key: option.value,
+      value: option.innerText,
+    }));
+
+    return mappedOptions as AppStoreConnectPricingOption[];
+  });
+
+  console.log(options);
 };
 
 export { createInAppPurchase };

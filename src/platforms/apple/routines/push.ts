@@ -36,7 +36,7 @@ const pushData = async (page: Page, config: AppStoreConnectConfig) => {
 
   // Creating IAP
   logger.init('Creating IAP');
-  await createInAppPurchase(page);
+  await createInAppPurchase(page, data[0]);
   logger.finish('Creating IAP');
 
   // Iterating results

@@ -43,6 +43,10 @@ interface InAppPurchase extends Pick<MappedInAppPurchase, 'name' | 'id'> {
   data: MappedInAppPurchasePricing[];
 }
 
+interface GoogleSheetsInAppPurchase extends Pick<MappedInAppPurchase, 'id'> {
+  data: MappedInAppPurchasePricing[];
+}
+
 export {
   InAppPurchaseStatus,
   InAppPurchaseType,
@@ -51,4 +55,5 @@ export {
   RawInAppPurchasePricing,
   MappedInAppPurchasePricing,
   InAppPurchase,
+  GoogleSheetsInAppPurchase,
 };

@@ -6,16 +6,14 @@ import { prompt } from '../../../util/terminal';
 const createInAppPurchase = async (page: Page) => {
   // Ask for data
 
-  const referenceName = 'referenceName';
-  const productId = 'productId2';
+  const referenceName = 'referenceName13';
+  const productId = 'productId13';
 
   // const referenceName = await prompt('Enter the Reference Name: ');
   // const productId = await prompt('Enter the Product ID: ');
 
-  console.log('referenceName', referenceName);
-  console.log('productId', productId);
-
   // Click on + button
+
   await page.waitForSelector('a[ng-click="showAddonPickerModal()"]');
   await page.evaluate(() => {
     const createButton = document.querySelector(
@@ -75,6 +73,16 @@ const createInAppPurchase = async (page: Page) => {
     // Click 'Create'
     const createButton = document.querySelector(
       'button[ng-click="onNext()"]'
+    ) as HTMLElement;
+    createButton?.click();
+  });
+
+  // Click on + button
+
+  await page.waitFor(60000);
+  await page.evaluate(() => {
+    const createButton = document.querySelector(
+      'a[ng-click="launchNewPriceModal()"]'
     ) as HTMLElement;
     createButton?.click();
   });

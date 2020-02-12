@@ -8,6 +8,7 @@ import { fetchFromSpreadsheet } from '../tasks/fetch-from-spreadsheet';
 import { login } from '../tasks/login';
 import { navigateToIAPs } from '../tasks/navigate-to-iap';
 import { navigateToMyApps } from '../tasks/navigate-to-my-apps';
+import { createInAppPurchase } from '../tasks/create-iap';
 
 const pushData = async (page: Page, config: AppStoreConnectConfig) => {
   const { app, credentials } = config;
@@ -20,18 +21,23 @@ const pushData = async (page: Page, config: AppStoreConnectConfig) => {
 
   // Signing In
   logger.init('Signing in');
-  // await login(page, credentials);
+  await login(page, credentials);
   logger.finish('Signing in');
 
   // Navigating to apps list
   logger.init('Navigating to apps list');
-  // await navigateToMyApps(page);
+  await navigateToMyApps(page);
   logger.finish('Navigating to apps list');
 
   // Navigating to IAPs list
   logger.init('Navigating to IAPs list');
-  // await navigateToIAPs(page, app.id);
+  await navigateToIAPs(page, app.id);
   logger.finish('Navigating to IAPs list');
+
+  // Creating IAP
+  logger.init('Creating IAP');
+  await createInAppPurchase(page);
+  logger.finish('Creating IAP');
 
   // Iterating results
   let proccessedItems = 0;

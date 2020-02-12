@@ -1,6 +1,5 @@
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 
-import { priceToString } from '../util/currency';
 import { timeout } from '../util/function';
 import { chunk } from '../util/array';
 
@@ -35,7 +34,7 @@ const addRow = async (worksheet: any, items: MappedInAppPurchasePricing[]) => {
     await worksheet.addRow({
       Region: region,
       Currency: currency,
-      Price: priceToString(price),
+      Price: price,
     });
   }
 };

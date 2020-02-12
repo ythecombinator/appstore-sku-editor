@@ -1,5 +1,5 @@
 const parenthesesRegExp = /\(([^)]+)\)/;
-const numbersRegExp = /[^\d.-]/g;
+const numbersRegExp = /\D+/g;
 
 const formatCurrency = (descriptor: string) =>
   parenthesesRegExp.exec(descriptor)![1];

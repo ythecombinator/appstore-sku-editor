@@ -13,8 +13,8 @@ const createInAppPurchase = async (
 ) => {
   // Ask for data
 
-  const referenceName = 'referenceName25';
-  const productId = 'productId25';
+  const referenceName = 'referenceName30';
+  const productId = 'productId30';
 
   // const referenceName = await prompt('Enter the Reference Name: ');
   // const productId = await prompt('Enter the Product ID: ');
@@ -133,7 +133,7 @@ const createInAppPurchase = async (
 
   // Select the USD pricing
 
-  await page.evaluate((optionToBeChecked: AppStoreConnectPricingOption) => {
+  await page.evaluate(() => {
     const selects = Array.from(
       document.querySelectorAll(
         'select[ng-options="price as price.display for price in data.basePriceList"]'
@@ -143,10 +143,10 @@ const createInAppPurchase = async (
       item => item.children.length > 100
     ) as HTMLSelectElement;
 
-    console.log(select, optionToBeChecked);
+    select.id = 'usd-pricing-select';
+  });
 
-    select.value = optionToBeChecked.key;
-  }, optionToBeChecked);
+  page.select('#usd-pricing-select', optionToBeChecked?.key);
 
   // Click 'Next'
 
@@ -163,8 +163,11 @@ const createInAppPurchase = async (
     const nextButton = nextButtonContainer.querySelector(
       'button[ng-click="onNext()"]'
     );
-    nextButton.click();
+
+    nextButton.id = 'usd-pricing-next-button';
   });
+
+  await page.click('#usd-pricing-next-button');
 };
 
 export { createInAppPurchase };

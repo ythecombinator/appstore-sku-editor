@@ -1,6 +1,7 @@
 import { Page } from 'puppeteer';
 
 import { findClosest } from '../../../util/array';
+import { prompt } from '../../../util/terminal';
 
 import { GoogleSheetsInAppPurchase } from '../models/InAppPurchase';
 import { AppStoreConnectPricingOption } from '../models/AppStoreConnectPricingOption';
@@ -12,11 +13,15 @@ const createInAppPurchase = async (
 ) => {
   // Ask for data
 
-  const referenceName = 'referenceName47';
-  const productId = 'productId47';
+  const { id, data } = baseInAppPurchase;
 
-  // const referenceName = await prompt('Enter the Reference Name: ');
-  // const productId = await prompt('Enter the Product ID: ');
+  const referenceName = await prompt(
+    `Enter the Reference Name for IAP created on top of ${id}: `
+  );
+
+  const productId = await prompt(
+    `Enter the Product ID for IAP created on top of ${id}: `
+  );
 
   // Click on + button
 
@@ -94,9 +99,7 @@ const createInAppPurchase = async (
   // Get the default value
 
   const usdRegion = 'United States ';
-  const usdPrice = baseInAppPurchase.data.find(
-    item => item.region === usdRegion
-  )?.price!;
+  const usdPrice = data.find(item => item.region === usdRegion)?.price!;
 
   // Get the available values
 
@@ -193,7 +196,7 @@ const createInAppPurchase = async (
 
     saveButton?.click();
   });
-  await page.waitFor(2000);
+  await page.waitFor(15000);
 };
 
 export { createInAppPurchase };

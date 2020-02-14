@@ -13,8 +13,8 @@ const createInAppPurchase = async (
 ) => {
   // Ask for data
 
-  const referenceName = 'referenceName30';
-  const productId = 'productId30';
+  const referenceName = 'referenceName47';
+  const productId = 'productId47';
 
   // const referenceName = await prompt('Enter the Reference Name: ');
   // const productId = await prompt('Enter the Product ID: ');
@@ -168,6 +168,34 @@ const createInAppPurchase = async (
   });
 
   await page.click('#usd-pricing-next-button');
+
+  // Loop through prices
+  // TODO
+  // Loop through prices
+
+  // Click 'Create'
+
+  await page.waitFor(30000);
+  await page.evaluate(() => {
+    const createButton = Array.from(document.querySelectorAll('button')).find(
+      item => item.innerText === 'Create'
+    );
+
+    createButton.scrollIntoView();
+    createButton?.click();
+  });
+
+  // Click 'Save'
+
+  await page.waitFor(2000);
+  await page.evaluate(() => {
+    const saveButton = Array.from(document.querySelectorAll('button')).find(
+      item => item.innerText === 'Save'
+    );
+
+    saveButton?.click();
+  });
+  await page.waitFor(2000);
 };
 
 export { createInAppPurchase };

@@ -29,8 +29,10 @@ Ideally, you can ask the project maintainer for both `.env` and `credentials.jso
 
 - Run `yarn` or `npm install`
 - Run `yarn build`
-- Run `yarn start`
+- Run `yarn start --platform ios --routine fetch` to fetch data from App Store Connect and push it to Google Sheets
+- Run `yarn start --platform ios --routine push` to fetch updated data from Google Sheets and push it back to App Store Connect
 - Follow prompts on the screen
+- Run `yarn start --help` for some documentation
 
 ## Development
 

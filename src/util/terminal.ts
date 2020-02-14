@@ -20,14 +20,14 @@ const prompt = (message: string): Promise<string> => {
 
 const cli = cliUtils(
   `
-	Usage
+	${blue.bold('Usage')}
 	  $ yarn start
 
-	Options
+  ${blue.bold('Options')}
     --platform, -p  Specify wether to connect to App Store ('ios') or Play Store ('android')
     --routine, -r   Specify wether to 'fetch' or 'push' data
 
-	Examples
+  ${blue.bold('Examples')}
 	  $ yarn start --platform ios --routine fetch
 `,
   {

@@ -4,7 +4,7 @@ import cliUtils from 'meow';
 
 // CLI
 
-const prompt = (message: string) => {
+const prompt = (message: string): Promise<string> => {
   const promptInterface = readline.createInterface({
     input: process.stdin,
     output: process.stdout,

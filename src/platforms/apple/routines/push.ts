@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Page } from 'puppeteer';
 
 import { meter } from '../../../util/performance';
@@ -15,8 +14,8 @@ const pushData = async (page: Page, config: AppStoreConnectConfig) => {
 
   meter.start();
 
-  // Getting data
-  const data = await fetchFromSpreadsheet();
+  // Getting items
+  const items = await fetchFromSpreadsheet();
 
   // Signing In
   logger.init('Signing in');
@@ -28,21 +27,26 @@ const pushData = async (page: Page, config: AppStoreConnectConfig) => {
   await navigateToMyApps(page);
   logger.finish('Navigating to apps list');
 
-  // Navigating to IAPs list
-  logger.init('Navigating to IAPs list');
-  await navigateToIAPs(page, app.id);
-  logger.finish('Navigating to IAPs list');
-
-  // Creating IAP
-  logger.init('Creating IAP');
-  await createInAppPurchase(page, data[0]);
-  logger.finish('Creating IAP');
-
   // Iterating results
   let proccessedItems = 0;
 
+  for (const item of items) {
+    // Navigating to IAPs list
+    logger.init('Navigating to IAPs list');
+    await navigateToIAPs(page, app.id);
+    logger.finish('Navigating to IAPs list');
+
+    // Creating IAP
+    logger.init(`Creating new IAP for item: ${item.id}`);
+    await createInAppPurchase(page, item);
+    logger.finish(`Creating new IAP for item: ${item.id}`);
+
+    // Incrementing the counter
+    proccessedItems++;
+  }
+
   const { time } = meter.stop();
-  logger.info(`Fetched ${proccessedItems} items in ${time}s. 🤓`);
+  logger.info(`Pushed ${proccessedItems} items in ${time}s. 🤓`);
 };
 
 export { pushData };

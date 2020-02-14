@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Page } from 'puppeteer';
 
 import { findClosest } from '../../../util/array';
@@ -59,9 +58,7 @@ const createInAppPurchase = async (
 
   await page.type('input[ng-model="data.newSub.productId.value"]', productId);
 
-  const nextButton = (await page.$(
-    'button[ng-click="onNext()"]'
-  )) as HTMLElement;
+  const nextButton = await page.$('button[ng-click="onNext()"]');
   nextButton?.click();
 
   // Fill THIRD part of the form
@@ -99,7 +96,7 @@ const createInAppPurchase = async (
   const usdRegion = 'United States ';
   const usdPrice = baseInAppPurchase.data.find(
     item => item.region === usdRegion
-  )?.price;
+  )?.price!;
 
   // Get the available values
 
@@ -112,7 +109,7 @@ const createInAppPurchase = async (
     );
     const select = selects.find(item => item.children.length > 100);
 
-    const rawOptions = Array.from(select.children) as HTMLOptionElement[];
+    const rawOptions = Array.from(select?.children!) as HTMLOptionElement[];
     const mappedOptions = rawOptions.map(option => ({
       key: option.value,
       value: option.innerText,
@@ -146,7 +143,8 @@ const createInAppPurchase = async (
     select.id = 'usd-pricing-select';
   });
 
-  page.select('#usd-pricing-select', optionToBeChecked?.key);
+  const usdPricingKey = optionToBeChecked?.key as string;
+  page.select('#usd-pricing-select', usdPricingKey);
 
   // Click 'Next'
 
@@ -158,13 +156,13 @@ const createInAppPurchase = async (
         "Choose a price, and we'll automatically calculate the prices for all 155 countries or regions based on the most recent foreign exchange rates. You can edit prices for individual countries or regions in the next step."
     );
     const nextButtonContainer =
-      description.parentElement.parentElement.parentElement.parentElement
-        .parentElement;
-    const nextButton = nextButtonContainer.querySelector(
+      description?.parentElement?.parentElement?.parentElement?.parentElement
+        ?.parentElement;
+    const nextButton = nextButtonContainer?.querySelector(
       'button[ng-click="onNext()"]'
     );
 
-    nextButton.id = 'usd-pricing-next-button';
+    nextButton!.id = 'usd-pricing-next-button';
   });
 
   await page.click('#usd-pricing-next-button');
@@ -181,7 +179,7 @@ const createInAppPurchase = async (
       item => item.innerText === 'Create'
     );
 
-    createButton.scrollIntoView();
+    createButton?.scrollIntoView();
     createButton?.click();
   });
 

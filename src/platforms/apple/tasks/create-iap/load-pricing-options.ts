@@ -1,5 +1,6 @@
-// @ts-nocheck
 import { Page } from 'puppeteer';
+
+const { angular } = window;
 
 const loadPricingOptions = async (page: Page) => {
   await page.waitFor(30000);

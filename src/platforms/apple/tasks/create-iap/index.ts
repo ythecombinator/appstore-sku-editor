@@ -88,7 +88,6 @@ const createInAppPurchase = async (
   // Load all options
 
   await loadPricingOptions(page);
-  await page.waitFor(1500000);
 
   // Loop through prices
   // TODO

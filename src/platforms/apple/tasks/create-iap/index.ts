@@ -15,6 +15,7 @@ import { clickNext } from './click-next';
 import { clickSave } from './click-save';
 import { clickCreate } from './click-create';
 import { loadPricingOptions } from './load-pricing-options';
+import { setPricingOptions } from './set-pricing-options';
 
 const createInAppPurchase = async (
   page: Page,
@@ -90,7 +91,9 @@ const createInAppPurchase = async (
   await loadPricingOptions(page);
 
   // Loop through prices
-  // TODO
+
+  await setPricingOptions(page, data);
+
   // Loop through prices
 
   // Click 'Create'

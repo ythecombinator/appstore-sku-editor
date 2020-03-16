@@ -1,10 +1,10 @@
 import { Page } from 'puppeteer';
 
-const { angular } = window;
-
 const loadPricingOptions = async (page: Page) => {
   await page.waitFor(30000);
   await page.evaluate(() => {
+    const { angular } = window;
+
     const tables = document.querySelectorAll(
       'table[class="openTopTable territoryPricing stickyHeaderTable"]'
     );

@@ -1,6 +1,11 @@
 import { Page } from 'puppeteer';
 import { MappedInAppPurchasePricing } from '../../models/InAppPurchase';
 
+interface Option {
+  selector: string;
+  value: string;
+}
+
 const setPricingOptions = async (
   page: Page,
   data: MappedInAppPurchasePricing[]
@@ -9,7 +14,7 @@ const setPricingOptions = async (
 
   const browserData = JSON.stringify(data);
 
-  await page.evaluate(browserData => {
+  const options = await page.evaluate(browserData => {
     // Params
     const data = JSON.parse(browserData);
 
@@ -41,6 +46,8 @@ const setPricingOptions = async (
       (countriesTable as HTMLTableElement)!.tBodies[0].children
     );
 
+    const iterable: Option[] = [];
+
     countries.forEach(countryEl => {
       // Identifier
       const rawRegionIdentifier = (countryEl.children[0] as HTMLTableRowElement)
@@ -54,6 +61,9 @@ const setPricingOptions = async (
       // DOM handling
 
       const selectEl = countries[0].children[1].querySelector('select');
+      const selectElId = `setPricingOptions-selectEl-${regionIdentifier}`;
+      selectEl?.setAttribute('id', selectElId);
+
       const optionEls = Array.from(selectEl!.children) as HTMLOptionElement[];
       const options: string[] = optionEls.map(option => (option as any).label);
       const formattedOptions = options.map(option => formatPrice(option));
@@ -62,14 +72,17 @@ const setPricingOptions = async (
       const optionToBeChecked = optionEls.find(
         option => formatPrice(option.label) === closest
       )!;
-      optionToBeChecked.selected = true;
 
-      console.log('regionIdentifier', regionIdentifier);
-      console.log('price', price);
-      console.log('closest', closest);
-      console.log('optionToBeChecked', optionToBeChecked);
+      iterable.push({ selector: selectElId, value: optionToBeChecked.value });
+
+      console.log('selector', selectElId);
+      console.log('value', optionToBeChecked.value);
     });
+
+    return iterable;
   }, browserData);
+
+  console.log('options', options);
 
   await page.waitFor(3000000);
 };

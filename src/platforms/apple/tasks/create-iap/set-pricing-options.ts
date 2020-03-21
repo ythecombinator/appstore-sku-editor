@@ -48,7 +48,7 @@ const setPricingOptions = async (
 
     const iterable: Option[] = [];
 
-    countries.forEach(countryEl => {
+    countries.forEach((countryEl, i) => {
       // Identifier
       const rawRegionIdentifier = (countryEl.children[0] as HTMLTableRowElement)
         .innerText;
@@ -60,8 +60,8 @@ const setPricingOptions = async (
 
       // DOM handling
 
-      const selectEl = countries[0].children[1].querySelector('select');
-      const selectElId = `setPricingOptions-selectEl-${regionIdentifier}`;
+      const selectEl = countries[i].children[1].querySelector('select');
+      const selectElId = `setPricingOptions-selectEl-${i}`;
       selectEl?.setAttribute('id', selectElId);
 
       const optionEls = Array.from(selectEl!.children) as HTMLOptionElement[];
@@ -74,17 +74,20 @@ const setPricingOptions = async (
       )!;
 
       iterable.push({ selector: selectElId, value: optionToBeChecked.value });
-
-      console.log('selector', selectElId);
-      console.log('value', optionToBeChecked.value);
     });
 
     return iterable;
   }, browserData);
 
-  console.log('options', options);
+  await page.waitFor(3000);
 
-  await page.waitFor(3000000);
+  const optionsPromises = options.map(option =>
+    page.select(`select[id='${option.selector}']`, option.value)
+  );
+
+  await Promise.all(optionsPromises);
+
+  await page.waitFor(3000);
 };
 
 export { setPricingOptions };

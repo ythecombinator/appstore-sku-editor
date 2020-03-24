@@ -8,76 +8,83 @@ interface Option {
 
 const setPricingOptions = async (
   page: Page,
-  data: MappedInAppPurchasePricing[]
+  data: MappedInAppPurchasePricing[],
+  productId: string
 ) => {
   await page.waitFor(30000);
 
   const browserData = JSON.stringify(data);
 
-  const options = await page.evaluate(browserData => {
-    // Params
-    const data = JSON.parse(browserData);
+  const options = await page.evaluate(
+    (browserData: string, productId: string) => {
+      // Params
+      const data = JSON.parse(browserData);
+      console.log('browserData', browserData);
+      // Helpers
+      const parenthesesRegExp = /\(([^)]+)\)/;
+      const numbersRegExp = /\D+/g;
 
-    // Helpers
-    const parenthesesRegExp = /\(([^)]+)\)/;
-    const numbersRegExp = /\D+/g;
+      const formatRegion = (descriptor: string) =>
+        descriptor.replace(parenthesesRegExp, '');
 
-    const formatRegion = (descriptor: string) =>
-      descriptor.replace(parenthesesRegExp, '');
+      const formatPrice = (price: string) =>
+        Number(price.replace(numbersRegExp, ''));
 
-    const formatPrice = (price: string) =>
-      Number(price.replace(numbersRegExp, ''));
+      const findClosest = (arr: number[], goal: number) =>
+        arr.reduce((prev, curr) =>
+          Math.abs(curr - goal) < Math.abs(prev - goal) ? curr : prev
+        );
 
-    const findClosest = (arr: number[], goal: number) =>
-      arr.reduce((prev, curr) =>
-        Math.abs(curr - goal) < Math.abs(prev - goal) ? curr : prev
+      // Scraping
+      const tables = document.querySelectorAll(
+        'table[class="openTopTable territoryPricing stickyHeaderTable"]'
       );
 
-    // Scraping
-    const tables = document.querySelectorAll(
-      'table[class="openTopTable territoryPricing stickyHeaderTable"]'
-    );
+      const countriesTable = Array.from(tables).find(
+        table => (table as HTMLTableElement).tBodies[0].children.length > 100
+      );
 
-    const countriesTable = Array.from(tables).find(
-      table => (table as HTMLTableElement).tBodies[0].children.length > 100
-    );
+      const countries = Array.from(
+        (countriesTable as HTMLTableElement)!.tBodies[0].children
+      );
 
-    const countries = Array.from(
-      (countriesTable as HTMLTableElement)!.tBodies[0].children
-    );
+      const iterable: Option[] = [];
 
-    const iterable: Option[] = [];
+      countries.forEach((countryEl, i) => {
+        // Identifier
+        const rawRegionIdentifier = (countryEl
+          .children[0] as HTMLTableRowElement).innerText;
+        const regionIdentifier = formatRegion(rawRegionIdentifier);
 
-    countries.forEach((countryEl, i) => {
-      // Identifier
-      const rawRegionIdentifier = (countryEl.children[0] as HTMLTableRowElement)
-        .innerText;
-      const regionIdentifier = formatRegion(rawRegionIdentifier);
+        // Desired price
+        const price = data.find((item: any) => item.region === regionIdentifier)
+          ?.price!;
 
-      // Desired price
-      const price = data.find((item: any) => item.region === regionIdentifier)
-        ?.price!;
+        // DOM handling
 
-      // DOM handling
+        const selectEl = countries[i].children[1].querySelector('select');
+        const selectElId = `setPricingOptions-selectEl-${productId}-${i}`;
+        selectEl?.setAttribute('id', selectElId);
 
-      const selectEl = countries[i].children[1].querySelector('select');
-      const selectElId = `setPricingOptions-selectEl-${i}`;
-      selectEl?.setAttribute('id', selectElId);
+        const optionEls = Array.from(selectEl!.children) as HTMLOptionElement[];
+        const options: string[] = optionEls.map(
+          option => (option as any).label
+        );
+        const formattedOptions = options.map(option => formatPrice(option));
 
-      const optionEls = Array.from(selectEl!.children) as HTMLOptionElement[];
-      const options: string[] = optionEls.map(option => (option as any).label);
-      const formattedOptions = options.map(option => formatPrice(option));
+        const closest = findClosest(formattedOptions, price);
+        const optionToBeChecked = optionEls.find(
+          option => formatPrice(option.label) === closest
+        )!;
 
-      const closest = findClosest(formattedOptions, price);
-      const optionToBeChecked = optionEls.find(
-        option => formatPrice(option.label) === closest
-      )!;
+        iterable.push({ selector: selectElId, value: optionToBeChecked.value });
+      });
 
-      iterable.push({ selector: selectElId, value: optionToBeChecked.value });
-    });
-
-    return iterable;
-  }, browserData);
+      return iterable;
+    },
+    browserData,
+    productId
+  );
 
   await page.waitFor(3000);
 

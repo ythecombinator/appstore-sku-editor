@@ -92,7 +92,7 @@ const createInAppPurchase = async (
 
   // Loop through prices
 
-  await setPricingOptions(page, data);
+  await setPricingOptions(page, data, productId);
 
   // Loop through prices
 
